@@ -268,7 +268,7 @@ class _PlantixHomePageState extends State<PlantixHomePage> {
                 ],
               ),
 
-              const Icon(Icons.arrow_forward, color: Colors.grey),
+              const Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey),
 
               // Second item: App Process
               Column(
@@ -285,7 +285,7 @@ class _PlantixHomePageState extends State<PlantixHomePage> {
                 ],
               ),
 
-              const Icon(Icons.arrow_forward, color: Colors.grey),
+              const Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey),
 
               // Third item: Results
               Column(
