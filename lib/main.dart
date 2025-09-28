@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:tomotoe_disease_detection_app/view/dashBoardScreen.dart';
 
 void main() {
-  runApp(const PlantixApp());
+  runApp(const TomaCareApp());
 }
 
-class PlantixApp extends StatelessWidget {
-  const PlantixApp({super.key});
+class TomaCareApp extends StatelessWidget {
+  const TomaCareApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class PlantixApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Roboto',
       ),
-      home:  PlantixHomePage(),
+      home:  TomaCareHomePage(),
       debugShowCheckedModeBanner: false,
     );
   }

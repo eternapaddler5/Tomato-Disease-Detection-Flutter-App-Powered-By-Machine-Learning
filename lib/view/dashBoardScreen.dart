@@ -1,14 +1,32 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class PlantixHomePage extends StatefulWidget {
-  const PlantixHomePage({super.key});
+import 'package:flutter/material.dart';
+import 'package:tomotoe_disease_detection_app/model/camera_model.dart';
+
+class TomaCareHomePage extends StatefulWidget {
+  const TomaCareHomePage({super.key});
 
   @override
-  State<PlantixHomePage> createState() => _PlantixHomePageState();
+  State<TomaCareHomePage> createState() => _TomaCareHomePageState();
 }
 
-class _PlantixHomePageState extends State<PlantixHomePage> {
+class _TomaCareHomePageState extends State<TomaCareHomePage> {
   int _selectedIndex = 0;
+  File? _selectedImage; // add this
+
+  void _pickImageFromCamera() async {
+    final image = await pickImageFromCamera();
+    if (image == null) return;
+
+    setState(() {
+      _selectedImage = image;
+    });
+
+    // (Optional) show a preview
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Image captured successfully!")),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +328,9 @@ class _PlantixHomePageState extends State<PlantixHomePage> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _pickImageFromCamera();
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Color(0xFFC1E698),
