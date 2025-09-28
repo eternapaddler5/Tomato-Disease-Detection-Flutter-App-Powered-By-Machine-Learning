@@ -68,6 +68,7 @@ flutter:
      - lib/view/icons/capture plant2.png
      - lib/view/icons/app process icon2.png
      - lib/view/icons/results2.png
+     - lib/view/icons/tomato animation.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

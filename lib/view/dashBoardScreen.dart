@@ -93,14 +93,6 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Weather',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -112,7 +104,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
                   'Today, 11 Aug',
                   style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
-                const SizedBox(height: 4),
+
                 const Text(
                   '25 °C',
                   style: TextStyle(
@@ -147,9 +139,9 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             child: Row(
               children: [
               Image.asset(
-              'lib/view/icons/tomato2.png',
-              width: 60,
-              height: 60,)
+              'lib/view/icons/tomato animation.gif',
+              width: 100,
+              height: 100,)
               ],
             ),
           ),
@@ -187,9 +179,10 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       children: [
         Expanded(
           child: _buildFeatureCard(
-            icon: Icons.science,
-            title: 'Fertilizer\nCalculator',
+            icon: Icons.history_edu_outlined,
+            title: 'Recent\nResults',
             color: Color(0xFF55873B),
+
           ),
         ),
         const SizedBox(width: 12),
@@ -204,7 +197,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
         Expanded(
           child: _buildFeatureCard(
             icon: Icons.agriculture,
-            title: 'Cultivation\nTips',
+            title: 'farming\nTips',
             color: Color(0xFF55873B),
           ),
         ),
