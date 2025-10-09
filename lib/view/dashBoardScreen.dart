@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:tomotoe_disease_detection_app/model/camera_model.dart';
+import 'package:tomotoe_disease_detection_app/controller/image_controller.dart';
 import 'package:tomotoe_disease_detection_app/view/farmingTipsScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/pestDiseaseScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/resultsScreen.dart';
@@ -16,9 +16,10 @@ class TomaCareHomePage extends StatefulWidget {
 class _TomaCareHomePageState extends State<TomaCareHomePage> {
   int _selectedIndex = 0;
   File? _selectedImage; // image captured from camera
+  final ImageController _imageController = ImageController();
 
   void _pickImageFromCamera() async {
-    final image = await pickImageFromCamera();
+    final image = await _imageController.captureFromCamera();
     if (image == null) return;
 
     setState(() {
@@ -31,7 +32,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
   }
 
   void _pickImageFromGallery() async {
-    final image = await pickImageFromGallery();
+    final image = await _imageController.selectFromGallery();
     if (image == null) return;
 
     setState(() {
@@ -44,7 +45,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
   }
 
   void _pickImageFromFiles() async {
-    final image = await pickImageFromFiles();
+    final image = await _imageController.selectFromFiles();
     if (image == null) return;
 
     setState(() {
@@ -202,29 +203,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     );
   }
 
-  Widget _buildCropIcon(IconData icon, Color color) {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: color, size: 30),
-    );
-  }
-
-  Widget _buildAddButton() {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        shape: BoxShape.circle,
-      ),
-      child: const Icon(Icons.add, color: Colors.black, size: 30),
-    );
-  }
+  // Removed unused private widgets to satisfy lints
 
   Widget _buildFeatureCards() {
     return Row(
@@ -428,31 +407,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     );
   }
 
-  Widget _buildStep(String title, IconData icon, Color color) {
-    return Column(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: color, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
+  // Removed unused _buildStep widget
 
   Widget _buildBottomNavigation() {
     return BottomNavigationBar(
