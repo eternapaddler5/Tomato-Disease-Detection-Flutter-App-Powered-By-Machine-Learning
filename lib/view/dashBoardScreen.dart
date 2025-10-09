@@ -30,6 +30,66 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     );
   }
 
+  void _pickImageFromGallery() async {
+    final image = await pickImageFromGallery();
+    if (image == null) return;
+
+    setState(() {
+      _selectedImage = image;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Image selected from gallery!")),
+    );
+  }
+
+  void _pickImageFromFiles() async {
+    final image = await pickImageFromFiles();
+    if (image == null) return;
+
+    setState(() {
+      _selectedImage = image;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Image selected from files!")),
+    );
+  }
+
+  void _showUploadOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImageFromGallery();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder_rounded),
+                title: const Text('Choose from Files'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImageFromFiles();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -342,6 +402,25 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             child: const Text(
               'Take A Picture',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _showUploadOptions,
+            icon: const Icon(Icons.upload_file, color: Colors.green),
+            label: const Text(
+              'Upload Image',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.green),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.green),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ),
