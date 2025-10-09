@@ -5,6 +5,7 @@ import 'package:tomotoe_disease_detection_app/controller/image_controller.dart';
 import 'package:tomotoe_disease_detection_app/view/farmingTipsScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/pestDiseaseScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/resultsScreen.dart';
+import 'package:tomotoe_disease_detection_app/view/profileScreen.dart';
 
 class TomaCareHomePage extends StatefulWidget {
   const TomaCareHomePage({super.key});
@@ -95,7 +96,14 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE6EEDA),
-      body: SafeArea(
+      body: _buildBody(),
+      bottomNavigationBar: _buildBottomNavigation(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_selectedIndex == 0) {
+      return SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -116,9 +124,12 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: _buildBottomNavigation(),
-    );
+      );
+    }
+    if (_selectedIndex == 1) {
+      return const FarmingTipsPage();
+    }
+    return const ProfileScreen();
   }
 
   Widget _buildHeader() {
@@ -422,10 +433,9 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       unselectedItemColor: Colors.grey,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble),
-          label: 'Community',
-        ),
+
+        BottomNavigationBarItem(icon: Icon(Icons.monitor_heart), label: 'Treatment guide',),
+
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );
