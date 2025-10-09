@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:tomotoe_disease_detection_app/model/camera_model.dart';
+import 'package:tomotoe_disease_detection_app/view/farmingTipsScreen.dart';
+import 'package:tomotoe_disease_detection_app/view/pestDiseaseScreen.dart';
+import 'package:tomotoe_disease_detection_app/view/resultsScreen.dart';
 
 class TomaCareHomePage extends StatefulWidget {
   const TomaCareHomePage({super.key});
@@ -12,7 +15,7 @@ class TomaCareHomePage extends StatefulWidget {
 
 class _TomaCareHomePageState extends State<TomaCareHomePage> {
   int _selectedIndex = 0;
-  File? _selectedImage; // add this
+  File? _selectedImage; // image captured from camera
 
   void _pickImageFromCamera() async {
     final image = await pickImageFromCamera();
@@ -22,7 +25,6 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       _selectedImage = image;
     });
 
-    // (Optional) show a preview
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Image captured successfully!")),
     );
@@ -31,7 +33,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE6EEDA),
+      backgroundColor: const Color(0xFFE6EEDA),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -39,27 +41,16 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Header
                 _buildHeader(),
                 const SizedBox(height: 20),
-
-                // Weather section
                 _buildWeatherSection(),
-                const SizedBox(height: 30), // Space for bottom navigation
-
-                // Crop Selection Row
+                const SizedBox(height: 30),
                 _buildCropSelection(),
                 const SizedBox(height: 24),
-
-                // Feature Cards
                 _buildFeatureCards(),
                 const SizedBox(height: 24),
-
-                // Heal your crop section
                 _buildHealYourCropSection(),
                 const SizedBox(height: 24),
-
-
               ],
             ),
           ),
@@ -99,13 +90,13 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   'Today, 11 Aug',
                   style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
-
-                const Text(
+                SizedBox(height: 4),
+                Text(
                   '25 °C',
                   style: TextStyle(
                     fontSize: 24,
@@ -138,10 +129,11 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-              Image.asset(
-              'lib/view/icons/tomato animation.gif',
-              width: 100,
-              height: 100,)
+                Image.asset(
+                  'lib/view/icons/tomato animation.gif',
+                  width: 100,
+                  height: 100,
+                ),
               ],
             ),
           ),
@@ -181,8 +173,16 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
           child: _buildFeatureCard(
             icon: Icons.history_edu_outlined,
             title: 'Recent\nResults',
-            color: Color(0xFF55873B),
-
+            color: const Color(0xFF55873B),
+            onTap: () {
+              // navigate to RecentResultsPage and pass the captured image (if any)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecentResultsPage(image: _selectedImage),
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(width: 12),
@@ -190,7 +190,13 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
           child: _buildFeatureCard(
             icon: Icons.bug_report,
             title: 'Pests &\nDiseases',
-            color: Color(0xFF55873B),
+            color: const Color(0xFF55873B),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PestsDiseasesPage()),
+              );
+            },
           ),
         ),
         const SizedBox(width: 12),
@@ -198,7 +204,13 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
           child: _buildFeatureCard(
             icon: Icons.agriculture,
             title: 'farming\nTips',
-            color: Color(0xFF55873B),
+            color: const Color(0xFF55873B),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FarmingTipsPage()),
+              );
+            },
           ),
         ),
       ],
@@ -209,35 +221,44 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     required IconData icon,
     required String title,
     required Color color,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    // Use Material + InkWell to keep ripple effect while preserving your design
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 32),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -255,16 +276,13 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
           ),
         ),
         const SizedBox(height: 20),
-
-        // Step by step process
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // First item: Capture Plant
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -272,16 +290,12 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
                     'lib/view/icons/capture plant2.png',
                     width: 50,
                     height: 50,
-
                   ),
-                  SizedBox(height: 5),
-                  Text('Capture Plant'),
+                  const SizedBox(height: 5),
+                  const Text('Capture Plant'),
                 ],
               ),
-
               const Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey),
-
-              // Second item: App Process
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -289,16 +303,12 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
                     'lib/view/icons/app process icon2.png',
                     width: 50,
                     height: 50,
-
                   ),
-                  SizedBox(height: 5),
-                  Text('App Process'),
+                  const SizedBox(height: 5),
+                  const Text('App Process'),
                 ],
               ),
-
               const Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey),
-
-              // Third item: Results
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -306,18 +316,15 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
                     'lib/view/icons/results2.png',
                     width: 50,
                     height: 50,
-
                   ),
-                  SizedBox(height: 5),
-                  Text('Results'),
+                  const SizedBox(height: 5),
+                  const Text('Results'),
                 ],
               ),
             ],
           ),
         ),
         const SizedBox(height: 30),
-
-        // Take A Picture Button
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -326,7 +333,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              foregroundColor: Color(0xFFC1E698),
+              foregroundColor: const Color(0xFFC1E698),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -368,8 +375,6 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     );
   }
 
-
-
   Widget _buildBottomNavigation() {
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
@@ -388,7 +393,6 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
           label: 'Community',
         ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-
       ],
     );
   }
