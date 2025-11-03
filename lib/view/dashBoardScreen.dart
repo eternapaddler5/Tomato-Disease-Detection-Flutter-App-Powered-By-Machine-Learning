@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:tomotoe_disease_detection_app/controller/image_controller.dart';
+import 'package:tomotoe_disease_detection_app/service/tflite_service.dart';
 import 'package:tomotoe_disease_detection_app/view/farmingTipsScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/pestDiseaseScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/resultsScreen.dart';
@@ -18,6 +19,88 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
   int _selectedIndex = 0;
   File? _selectedImage; // image captured from camera
   final ImageController _imageController = ImageController();
+  final TomaCareClassifier _classifier = TomaCareClassifier();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadModel();
+  }
+
+  @override
+  void dispose() {
+    _classifier.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadModel() async {
+    try {
+      await _classifier.loadModel();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading model: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _processImage(File image) async {
+    if (!_classifier.isModelLoaded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Model is still loading. Please wait...')),
+      );
+      return;
+    }
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Analyzing image...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    try {
+      final prediction = await _classifier.predict(image);
+      
+      if (!mounted) return;
+      
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      // Navigate to results screen with image and prediction
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RecentResultsPage(
+            image: image,
+            prediction: prediction,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error during prediction: $e')),
+      );
+    }
+  }
 
   void _pickImageFromCamera() async {
     final image = await _imageController.captureFromCamera();
@@ -27,9 +110,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       _selectedImage = image;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Image captured successfully!")),
-    );
+    await _processImage(image);
   }
 
   void _pickImageFromGallery() async {
@@ -40,9 +121,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       _selectedImage = image;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Image selected from gallery!")),
-    );
+    await _processImage(image);
   }
 
   void _pickImageFromFiles() async {
@@ -53,9 +132,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       _selectedImage = image;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Image selected from files!")),
-    );
+    await _processImage(image);
   }
 
   void _showUploadOptions() {
