@@ -21,18 +21,20 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
   final ImageController _imageController = ImageController();
   final TomaCareClassifier _classifier = TomaCareClassifier();
 
+  // ---------------------------- LIFECYCLE METHODS ----------------------------
+
   @override
   void initState() {
     super.initState();
-    _loadModel();
+    _loadModel();//Loads the model when the app starts
   }
 
   @override
   void dispose() {
-    _classifier.dispose();
+    _classifier.dispose();// Always clean up
     super.dispose();
   }
-
+  // ---------------------------- MODEL LOADING ----------------------------
   Future<void> _loadModel() async {
     try {
       await _classifier.loadModel();
@@ -44,6 +46,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       }
     }
   }
+  // ---------------------------- IMAGE PROCESSING ----------------------------
 
   Future<void> _processImage(File image) async {
     if (!_classifier.isModelLoaded) {
@@ -101,7 +104,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       );
     }
   }
-
+  // ---------------------------- IMAGE PICKING ----------------------------
   void _pickImageFromCamera() async {
     final image = await _imageController.captureFromCamera();
     if (image == null) return;
@@ -134,7 +137,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
 
     await _processImage(image);
   }
-
+  // ---------------------------- HELPER METHODS ----------------------------
   void _showUploadOptions() {
     showModalBottomSheet(
       context: context,
@@ -168,7 +171,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       },
     );
   }
-
+// ---------------------------- MAIN UI ----------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -495,8 +498,8 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     );
   }
 
-  // Removed unused _buildStep widget
 
+// ---------------------------- BOTTOM NAVIGATION ----------------------------
   Widget _buildBottomNavigation() {
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
@@ -513,7 +516,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
 
         BottomNavigationBarItem(icon: Icon(Icons.monitor_heart), label: 'Treatment guide',),
 
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ],
     );
   }

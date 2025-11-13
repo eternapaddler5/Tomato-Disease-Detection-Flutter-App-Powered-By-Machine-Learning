@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:tomotoe_disease_detection_app/service/tflite_service.dart';
+import 'package:tomotoe_disease_detection_app/service/disease_info_service.dart';
+import 'package:tomotoe_disease_detection_app/model/disease_info.dart';
 
 class RecentResultsPage extends StatelessWidget {
   final File? image;
@@ -41,6 +43,7 @@ class RecentResultsPage extends StatelessWidget {
                 _buildResultCard(prediction!),
                 const SizedBox(height: 16),
                 _buildConfidenceBreakdown(prediction!),
+                _buildDiseaseDetails(prediction!),
               ] else if (image != null) ...[
                 const Card(
                   child: Padding(
@@ -217,6 +220,198 @@ class RecentResultsPage extends StatelessWidget {
                 ),
               );
             }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDiseaseDetails(PredictionResult prediction) {
+    final diseaseInfo = DiseaseInfoService.getDiseaseInfo(prediction.label);
+    
+    if (diseaseInfo == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        _buildSymptomsSection(diseaseInfo),
+        const SizedBox(height: 16),
+        _buildManagementSection(diseaseInfo),
+        const SizedBox(height: 16),
+        _buildPreventionSection(diseaseInfo),
+      ],
+    );
+  }
+
+  Widget _buildSymptomsSection(DiseaseInfo diseaseInfo) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.blue[700]),
+                const SizedBox(width: 8),
+                const Text(
+                  'Symptoms',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...diseaseInfo.symptoms.map((symptom) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.circle, size: 6, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      symptom,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildManagementSection(DiseaseInfo diseaseInfo) {
+    final severityColor = diseaseInfo.severity == 'High' 
+        ? Colors.red 
+        : diseaseInfo.severity == 'Medium' 
+            ? Colors.orange 
+            : Colors.green;
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.healing, color: Colors.green[700]),
+                const SizedBox(width: 8),
+                const Text(
+                  'Management Instructions',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: severityColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: severityColor.withOpacity(0.3)),
+              ),
+              child: Text(
+                'Severity: ${diseaseInfo.severity}',
+                style: TextStyle(
+                  color: severityColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...diseaseInfo.managementSteps.asMap().entries.map((entry) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${entry.key + 1}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[700],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        entry.value,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreventionSection(DiseaseInfo diseaseInfo) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.shield, color: Colors.blue[700]),
+                const SizedBox(width: 8),
+                const Text(
+                  'Prevention Tips',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                diseaseInfo.preventionTips,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
           ],
         ),
       ),
