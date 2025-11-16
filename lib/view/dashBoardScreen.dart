@@ -304,7 +304,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
         Expanded(
           child: _buildFeatureCard(
             icon: Icons.history_edu_outlined,
-            title: 'Recent\nResults',
+            title: '',
             color: const Color(0xFF55873B),
             onTap: () {
               // navigate to RecentResultsPage and pass the captured image (if any)

@@ -12,7 +12,7 @@ class PestsDiseasesPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFE6EEDA),
       appBar: AppBar(
-        title: const Text('Pests & Diseases'),
+        title: const Text('Diseases'),
         backgroundColor: const Color(0xFF55873B),
       ),
       body: ListView.builder(

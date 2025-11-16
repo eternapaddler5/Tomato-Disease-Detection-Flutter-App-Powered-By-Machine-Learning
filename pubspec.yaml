@@ -39,6 +39,7 @@ dependencies:
   tflite_flutter: ^0.12.1
   image: ^3.3.0
   tflite_flutter_helper_plus: ^0.0.2
+  shared_preferences: ^2.2.2
 
 
 dev_dependencies:
