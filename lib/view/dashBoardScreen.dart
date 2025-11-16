@@ -247,7 +247,9 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
                   'Today, 11 Aug',
                   style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
+
                 SizedBox(height: 4),
+
                 Text(
                   '25 °C',
                   style: TextStyle(
@@ -315,11 +317,13 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             },
           ),
         ),
+
         const SizedBox(width: 12),
+
         Expanded(
           child: _buildFeatureCard(
             icon: Icons.bug_report,
-            title: 'Pests &\nDiseases',
+            title: 'Diseases guidance',
             color: const Color(0xFF55873B),
             onTap: () {
               Navigator.push(
@@ -329,20 +333,8 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             },
           ),
         ),
+
         const SizedBox(width: 12),
-        Expanded(
-          child: _buildFeatureCard(
-            icon: Icons.agriculture,
-            title: 'farming\nTips',
-            color: const Color(0xFF55873B),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FarmingTipsPage()),
-              );
-            },
-          ),
-        ),
       ],
     );
   }
@@ -353,7 +345,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     required Color color,
     VoidCallback? onTap,
   }) {
-    // Use Material + InkWell to keep ripple effect while preserving your design
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -397,12 +389,15 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Diagnose your crop',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+
+        Center(
+          child: Text(
+            'Diagnose your crop',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
         const SizedBox(height: 20),
