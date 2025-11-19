@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:tomotoe_disease_detection_app/controller/image_controller.dart';
+import 'package:tomotoe_disease_detection_app/model/past_record.dart';
+import 'package:tomotoe_disease_detection_app/service/past_record_db.dart';
 import 'package:tomotoe_disease_detection_app/service/tflite_service.dart';
-import 'package:tomotoe_disease_detection_app/view/farmingTipsScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/pestDiseaseScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/resultsScreen.dart';
 import 'package:tomotoe_disease_detection_app/view/profileScreen.dart';
+import 'package:tomotoe_disease_detection_app/view/past_records_screen.dart';
 
 class TomaCareHomePage extends StatefulWidget {
   const TomaCareHomePage({super.key});
@@ -79,6 +83,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
 
     try {
       final prediction = await _classifier.predict(image);
+      await _recordPrediction(image, prediction);
       
       if (!mounted) return;
       
@@ -109,33 +114,72 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
     final image = await _imageController.captureFromCamera();
     if (image == null) return;
 
+    final persistedImage = await _persistImage(image);
+
     setState(() {
-      _selectedImage = image;
+      _selectedImage = persistedImage;
     });
 
-    await _processImage(image);
+    await _processImage(persistedImage);
   }
 
   void _pickImageFromGallery() async {
     final image = await _imageController.selectFromGallery();
     if (image == null) return;
 
+    final persistedImage = await _persistImage(image);
+
     setState(() {
-      _selectedImage = image;
+      _selectedImage = persistedImage;
     });
 
-    await _processImage(image);
+    await _processImage(persistedImage);
   }
 
   void _pickImageFromFiles() async {
     final image = await _imageController.selectFromFiles();
     if (image == null) return;
 
+    final persistedImage = await _persistImage(image);
+
     setState(() {
-      _selectedImage = image;
+      _selectedImage = persistedImage;
     });
 
-    await _processImage(image);
+    await _processImage(persistedImage);
+  }
+  
+  Future<File> _persistImage(File image) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final imagesDir = Directory(p.join(appDir.path, 'captured_images'));
+    if (!await imagesDir.exists()) {
+      await imagesDir.create(recursive: true);
+    }
+
+    if (p.isWithin(imagesDir.path, image.path)) {
+      return image;
+    }
+
+    final extension = p.extension(image.path);
+    final fileName =
+        '${DateTime.now().microsecondsSinceEpoch}${extension.isEmpty ? '.jpg' : extension}';
+    final destination = File(p.join(imagesDir.path, fileName));
+    return image.copy(destination.path);
+  }
+
+  Future<void> _recordPrediction(File image, PredictionResult prediction) async {
+    try {
+      await PastRecordDatabase.instance.insertRecord(
+        PastRecord(
+          imagePath: image.path,
+          diagnosisLabel: prediction.label,
+          confidence: prediction.confidence,
+          createdAt: DateTime.now(),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Failed to save record: $e');
+    }
   }
   // ---------------------------- HELPER METHODS ----------------------------
   void _showUploadOptions() {
@@ -207,7 +251,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       );
     }
     if (_selectedIndex == 1) {
-      return const FarmingTipsPage();
+      return const PastRecordsScreen();
     }
     return const ProfileScreen();
   }
@@ -304,10 +348,9 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
         Expanded(
           child: _buildFeatureCard(
             icon: Icons.history_edu_outlined,
-            title: '',
+            title: 'Recent\nResults',
             color: const Color(0xFF55873B),
             onTap: () {
-              // navigate to RecentResultsPage and pass the captured image (if any)
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -319,7 +362,6 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
         ),
 
         const SizedBox(width: 12),
-
         Expanded(
           child: _buildFeatureCard(
             icon: Icons.bug_report,
@@ -333,8 +375,6 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
             },
           ),
         ),
-
-        const SizedBox(width: 12),
       ],
     );
   }
@@ -508,9 +548,7 @@ class _TomaCareHomePageState extends State<TomaCareHomePage> {
       unselectedItemColor: Colors.grey,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-
-        BottomNavigationBarItem(icon: Icon(Icons.monitor_heart), label: 'Treatment guide',),
-
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ],
     );

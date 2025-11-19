@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tomotoe_disease_detection_app/service/disease_info_service.dart';
 import 'package:tomotoe_disease_detection_app/view/disease_detail_screen.dart';
+import 'package:tomotoe_disease_detection_app/service/disease_info_service.dart';
 
-class FarmingTipsPage extends StatelessWidget {
-  const FarmingTipsPage({super.key});
+class CommunityScreen extends StatelessWidget {
+  const CommunityScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,3 +78,11 @@ class FarmingTipsPage extends StatelessWidget {
     }
   }
 }
+
+
+
+
+
+
+
+
